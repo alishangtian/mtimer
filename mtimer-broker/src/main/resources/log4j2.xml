@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <properties>
+        <Property name="PRO_NAME">mtimer</Property>
+        <Property name="LOG_HOME">/home/work/log/${PRO_NAME}</Property>
+        <Property name="LOG_PATTERN">[%-5level] %date{yyyy-MM-dd HH:mm:ss.SSS} [%t]%x [%c{1.}.%M()] [%message]%n</Property>
+
+        <!--加上日志路径信息的一秒能打印10000条[%location],去掉的话一秒能打印30000条,但是10000条每秒也完成够业务使用了 -->
+        <Property name="ERROR_LOG_PATTERN">[%-5level] %date{yyyy-MM-dd HH:mm:ss.SSS} [%t]%x [%location] [%message]%n</Property>
+
+        <!--本地CONSOLE日志可带彩色效果-->
+        <Property name="CONSOLE_LOG_PATTERN">%style{%d{yyyy-MM-dd HH:mm:ss.SSS}}{black} %highlight{%-5level} [%style{%t}{bright,blue}] [%style{%l}{bright,yellow}] %msg%n </Property>
+    </properties>
+
+    <appenders>
+
+        <Console name="console" target="system_out">
+            <PatternLayout>
+                <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <RollingRandomAccessFile name="info"
+                                 fileName="${LOG_HOME}/${PRO_NAME}.info.log"
+                                 filePattern="${LOG_HOME}/${PRO_NAME}.%d{yyyyMMddHH}.info.log.gz"
+                                 immediateFlush="true" append="true">
+            <PatternLayout>
+                <Pattern>${LOG_PATTERN}</Pattern>
+            </PatternLayout>
+
+            <Filters>
+                <!--只打warn,error级别的日志-->
+                <ThresholdFilter level="info" onMatch="ACCEPT"/>
+            </Filters>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}">
+                    <IfFileName glob="*.log.gz"/>
+                    <IfLastModified age="12H"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="error"
+                                 fileName="${LOG_HOME}/${PRO_NAME}.error.log"
+                                 filePattern="${LOG_HOME}/${PRO_NAME}.%d{yyyyMMddHH}.error.log.gz"
+                                 immediateFlush="true" append="true">
+            <PatternLayout>
+                <Pattern>${ERROR_LOG_PATTERN}</Pattern>
+            </PatternLayout>
+            <Filters>
+                <!--只打warn,error级别的日志-->
+                <ThresholdFilter level="warn" onMatch="ACCEPT"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}">
+                    <IfFileName glob="*.error.log.gz"/>
+                    <IfLastModified age="12H"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+    </appenders>
+
+    <loggers>
+        <Logger name="com.xiaomi.infra.galaxy.lcs.log.log4j2.LCSThriftLogger" level="debug"
+                additivity="false">
+            <AppenderRef ref="info" level="debug"/>
+        </Logger>
+        <Root level="info" includeLocation="true">
+            <AppenderRef ref="info"/>
+            <AppenderRef ref="error"/>
+            <AppenderRef ref="console"/>
+        </Root>
+    </loggers>
+</configuration>

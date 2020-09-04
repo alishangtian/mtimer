@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: xtimer
+xtimer:
+  redis:
+    nodes: 58.87.80.94:6379,58.87.80.94:6380,140.143.184.197:6379,140.143.184.197:6380,129.204.169.119:6379,129.204.169.119:6380
+    timeout: 5000
+  broker:
+    clustername: default
+    startScanner: true
+    host:
+    leaderFailThreshold: 5
+    joinClusterFailThreshold: 15
+    timeoutThreshold: 8000
+    heartbeatInterval: 2000
+    keepLeadingInterval: 2000
+    checkFollowerInterval: 2000
+    partitionCount: 16
+  server:
+    listenPort: 10000
+    serverWorkerThreads: 8
+    serverCallbackExecutorThreads: 0
+    serverSelectorThreads: 3
+    serverOnewaySemaphoreValue: 256
+    serverAsyncSemaphoreValue: 64
+    serverChannelMaxIdleTimeSeconds: 30
+    serverSocketSndBufSize: 65535
+    serverSocketRcvBufSize: 65535
+    serverPooledByteBufAllocatorEnable: true
+    useEpollNativeSelector: false
+  # client for communicating with other brokers
+  client:
+    clientWorkerThreads: 4
+    clientOnewaySemaphoreValue: 65535
+    clientAsyncSemaphoreValue: 65535
+    connectTimeoutMillis: 3000
+    channelNotActiveInterval: 60000
+    clientChannelMaxIdleTimeSeconds: 30
+    clientSocketSndBufSize: 65535
+    clientSocketRcvBufSize: 65535
+    clientPooledByteBufAllocatorEnable: true
+    clientCloseSocketIfTimeout: true
+    useTLS: false
+  scanner:
+    scanZsetThreadPoolCoreSize: 8
+    scanZsetThreadPoolMaxSize: 8
+    scanZsetThreadPoolQueueMaxSize: 20480
+    scanListThreadPoolCoreSize: 16
+    scanListThreadPoolMaxSize: 16
+    scanListThreadPoolQueueMaxSize: 20480
+    triggerThreadPoolCoreSize: 32
+    triggerThreadPoolMaxSize: 32
+    triggerThreadPoolQueueMaxSize: 20480
+
+
+
+
+
+
+

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: mtimer-demo
+server:
+  port: 8888
+  random:
+    origin: 5000
+    bound: 1800000
+mtimer:
+  config:
+    registers: 10.46.27.8:6379,10.46.27.8:6380,10.46.5.145:6379,10.46.5.145:6380,10.46.14.4:6379,10.46.14.4:6380
+    timeout: 5000
+    groupKey: ocean
+    appKey: ocean
+    clusterName: mtimer_xmo
+    askLeaderAndHeartBeatToFollowerInterval: 3000
+    clientEnabled: true
+  client:
+    clientWorkerThreads: 8
+    clientCallbackExecutorThreads: 8
+    clientOnewaySemaphoreValue: 65535
+    clientAsyncSemaphoreValue: 65535
+    connectTimeoutMillis: 3000
+    channelNotActiveInterval: 60000
+    clientChannelMaxIdleTimeSeconds: 120
+    clientSocketSndBufSize: 65535
+    clientSocketRcvBufSize: 65535
+    clientPooledByteBufAllocatorEnable: true
+    clientCloseSocketIfTimeout: true
+    useTLS: false
+  

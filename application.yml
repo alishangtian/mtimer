@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: mtimer
+mtimer:
+  redis:
+    nodes: 10.46.27.8:6379,10.46.27.8:6380,10.46.5.145:6379,10.46.5.145:6380,10.46.14.4:6379,10.46.14.4:6380
+    timeout: 5000
+  broker:
+    clustername: xtimer_xmo
+    startScanner: true
+    host:
+    leaderFailThreshold: 5
+    joinClusterFailThreshold: 15
+    timeoutThreshold: 8000
+    heartbeatInterval: 2000
+    keepLeadingInterval: 2000
+    checkFollowerInterval: 2000
+    partitionCount: 12
+  server:
+    listenPort: 10000
+    serverWorkerThreads: 8
+    serverCallbackExecutorThreads: 0
+    serverSelectorThreads: 3
+    serverOnewaySemaphoreValue: 256
+    serverAsyncSemaphoreValue: 64
+    serverChannelMaxIdleTimeSeconds: 120
+    serverSocketSndBufSize: 65535
+    serverSocketRcvBufSize: 65535
+    serverPooledByteBufAllocatorEnable: true
+    useEpollNativeSelector: false
+  client:
+    clientWorkerThreads: 4
+    clientOnewaySemaphoreValue: 65535
+    clientAsyncSemaphoreValue: 65535
+    connectTimeoutMillis: 3000
+    channelNotActiveInterval: 60000
+    clientChannelMaxIdleTimeSeconds: 120
+    clientSocketSndBufSize: 65535
+    clientSocketRcvBufSize: 65535
+    clientPooledByteBufAllocatorEnable: true
+    clientCloseSocketIfTimeout: true
+    useTLS: false
+  scanner:
+    scanZsetThreadPoolCoreSize: 8
+    scanZsetThreadPoolMaxSize: 8
+    scanZsetThreadPoolQueueMaxSize: 20480
+    scanListThreadPoolCoreSize: 16
+    scanListThreadPoolMaxSize: 16
+    scanListThreadPoolQueueMaxSize: 20480
+    triggerThreadPoolCoreSize: 32
+    triggerThreadPoolMaxSize: 32
+    triggerThreadPoolQueueMaxSize: 20480

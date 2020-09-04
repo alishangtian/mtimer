@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: xtimer-demo
+server:
+  port: 8888
+  random: 3600
+xtimer:
+  config:
+    registers: 58.87.80.94:6379,58.87.80.94:6380,140.143.184.197:6379,140.143.184.197:6380,129.204.169.119:6379,129.204.169.119:6380
+    timeout: 5000
+    groupKey: demo
+    appKey: demo
+    clusterName: xtimer_tcc
+    askLeaderAndHeartBeatToFollowerInterval: 3000
+    clientEnabled: true
+  client:
+    clientWorkerThreads: 4
+    clientCallbackExecutorThreads: 8
+    clientOnewaySemaphoreValue: 65535
+    clientAsyncSemaphoreValue: 65535
+    connectTimeoutMillis: 3000
+    channelNotActiveInterval: 60000
+    clientChannelMaxIdleTimeSeconds: 120
+    clientSocketSndBufSize: 65535
+    clientSocketRcvBufSize: 65535
+    clientPooledByteBufAllocatorEnable: true
+    clientCloseSocketIfTimeout: true
+    useTLS: false
