@@ -482,20 +482,21 @@ public class BrokerStarter {
      **/
     private boolean askBrokerForReblance(BrokerWrapper timeoutBrokerWrapper) {
         List<String> keys = timeoutBrokerWrapper.getServeKeys();
-        int size = keys.size();
-        while (size > 0) {
-            Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
-            for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entrySet) {
-                if (!stringBrokerWrapperEntry.getKey().equals(timeoutBrokerWrapper.getAddr())) {
-                    stringBrokerWrapperEntry.getValue().getServeKeys().add(keys.get(size - 1));
-                    size--;
-                    if (size == 0) {
+        Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
+        List<Map.Entry<String, BrokerWrapper>> entryList = new ArrayList<>(entrySet);
+        for (String key : keys) {
+            Collections.sort(entryList, Comparator.comparingInt(t -> t.getValue().getServeKeys().size()));
+            boolean shot = false;
+            while (!shot) {
+                for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entryList) {
+                    if (!stringBrokerWrapperEntry.getKey().equals(timeoutBrokerWrapper.getAddr())) {
+                        stringBrokerWrapperEntry.getValue().getServeKeys().add(key);
+                        shot = true;
                         break;
                     }
                 }
             }
         }
-        Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
         for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entrySet) {
             if (!stringBrokerWrapperEntry.getKey().equals(timeoutBrokerWrapper.getAddr())) {
                 if (stringBrokerWrapperEntry.getKey().equals(this.hostAddr)) {
@@ -518,20 +519,21 @@ public class BrokerStarter {
      **/
     private boolean newLeaderAskBrokerForReblance(BrokerWrapper timeoutBrokerWrapper) {
         List<String> keys = timeoutBrokerWrapper.getServeKeys();
-        int size = keys.size();
-        while (size > 0) {
-            Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
-            for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entrySet) {
-                if (!stringBrokerWrapperEntry.getKey().equals(timeoutBrokerWrapper.getAddr())) {
-                    stringBrokerWrapperEntry.getValue().getServeKeys().add(keys.get(size - 1));
-                    size--;
-                    if (size == 0) {
+        Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
+        List<Map.Entry<String, BrokerWrapper>> entryList = new ArrayList<>(entrySet);
+        for (String key : keys) {
+            Collections.sort(entryList, Comparator.comparingInt(t -> t.getValue().getServeKeys().size()));
+            boolean shot = false;
+            while (!shot) {
+                for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entryList) {
+                    if (!stringBrokerWrapperEntry.getKey().equals(timeoutBrokerWrapper.getAddr())) {
+                        stringBrokerWrapperEntry.getValue().getServeKeys().add(key);
+                        shot = true;
                         break;
                     }
                 }
             }
         }
-        Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
         for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entrySet) {
             if (!stringBrokerWrapperEntry.getKey().equals(timeoutBrokerWrapper.getAddr())) {
                 if (stringBrokerWrapperEntry.getKey().equals(this.hostAddr)) {
@@ -675,19 +677,21 @@ public class BrokerStarter {
             if (null == brokerWrapper.getServeKeys() || brokerWrapper.getServeKeys().isEmpty()) {
                 int serveCount = brokerConfig.getPartitionCount() / (this.brokerWrapperMap.size() + 1);
                 Set<Map.Entry<String, BrokerWrapper>> entrySet = this.brokerWrapperMap.entrySet();
+                List<Map.Entry<String, BrokerWrapper>> entryList = new ArrayList<>(entrySet);
                 while (serveCount > 0) {
-                    for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entrySet) {
-                        if (stringBrokerWrapperEntry.getValue().getServeKeys().size() > 1) {
-                            keys.add(stringBrokerWrapperEntry.getValue().getServeKeys().remove(0));
-                            serveCount--;
-                            if (serveCount == 0) {
-                                break;
-                            }
-                        }
+                    Collections.sort(entryList, (t1, t2) -> t2.getValue().getServeKeys().size() - t1.getValue().getServeKeys().size());
+                    if (entryList.get(0).getValue().getServeKeys().size() > 1) {
+                        keys.add(entryList.get(0).getValue().getServeKeys().remove(0));
+                        serveCount--;
                     }
+
                 }
                 brokerWrapper.setServeKeys(keys);
                 for (Map.Entry<String, BrokerWrapper> stringBrokerWrapperEntry : entrySet) {
+                    if (stringBrokerWrapperEntry.getValue().isSelf(this.hostAddr) && brokerConfig.isStartScanner()) {
+                        scanStarter.restart(stringBrokerWrapperEntry.getValue().getServeKeys());
+                        continue;
+                    }
                     notifyBrokerForRebalance(stringBrokerWrapperEntry.getValue());
                 }
                 this.brokerWrapperMap.put(brokerAddr, brokerWrapper);
