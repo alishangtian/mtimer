@@ -40,7 +40,7 @@ public class CheckCopyWorker implements Runnable {
                     try {
                         String[] keyArray = StringUtils.split(key, ":");
                         String copyKey = zsetToCopyListKey(keyArray);
-                        String retryKey = zsetToRetryZsetKey(keyArray);
+                        String retryKey = zsetToRetryListKey(keyArray);
                         long start = 0;
                         long end = start + PAGE_SIZE;
                         while (true) {
@@ -57,16 +57,16 @@ public class CheckCopyWorker implements Runnable {
                                                     if (callBackProcessor.trigger(mtimerRequest)) {
                                                         deleteCopy(copyKey, value);
                                                     } else {
-                                                        jedisCluster.zadd(retryKey, mtimerRequest.getCallBackTime(), value);
+                                                        jedisCluster.lpush(retryKey, value);
                                                         log.warn("CheckCopyWorker timer trigger failed send into retry queue {}", JSONUtils.toJSONString(mtimerRequest));
                                                     }
                                                 } catch (Exception e) {
-                                                    jedisCluster.zadd(retryKey, mtimerRequest.getCallBackTime(), value);
+                                                    jedisCluster.lpush(retryKey, value);
                                                     log.error("CheckCopyWorker trigger error for redis send into retry queue {}", e.getMessage(), e);
                                                 }
                                             });
                                         } catch (Exception e) {
-                                            jedisCluster.zadd(retryKey, mtimerRequest.getCallBackTime(), value);
+                                            jedisCluster.lpush(retryKey, value);
                                             log.error("CheckCopyWorker submit error for redis {}", e.getMessage(), e);
                                         }
                                     } else {
@@ -81,16 +81,16 @@ public class CheckCopyWorker implements Runnable {
                                                         if (callBackProcessor.trigger(mtimerRequest)) {
                                                             deleteCopy(copyKey, value);
                                                         } else {
-                                                            jedisCluster.zadd(retryKey, mtimerRequest.getCallBackTime(), value);
+                                                            jedisCluster.lpush(retryKey, value);
                                                             log.warn("CheckCopyWorker timer trigger failed send into retry queue {}", JSONUtils.toJSONString(mtimerRequest));
                                                         }
                                                     } catch (Exception e) {
-                                                        jedisCluster.zadd(retryKey, mtimerRequest.getCallBackTime(), value);
+                                                        jedisCluster.lpush(retryKey, value);
                                                         log.error("CheckCopyWorker trigger error for hashedwaheeledtimer send into retry queue {}", e.getMessage(), e);
                                                     }
                                                 });
                                             } catch (Exception e) {
-                                                jedisCluster.zadd(retryKey, mtimerRequest.getCallBackTime(), value);
+                                                jedisCluster.lpush(retryKey, value);
                                                 log.error("CheckCopyWorker submit error for hashedwaheeledtimer {}", e.getMessage(), e);
                                             }
                                         }, mtimerRequest.getCallBackTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
@@ -137,7 +137,7 @@ public class CheckCopyWorker implements Runnable {
      * @Date 2020/8/5 下午2:23
      * @Author maoxiaobing
      **/
-    private static String zsetToRetryZsetKey(String[] keyArray) {
+    private static String zsetToRetryListKey(String[] keyArray) {
         keyArray[0] = "retry";
         return StringUtils.join(keyArray, ":");
     }
