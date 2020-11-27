@@ -68,10 +68,6 @@
     </appenders>
 
     <loggers>
-        <Logger name="com.xiaomi.infra.galaxy.lcs.log.log4j2.LCSThriftLogger" level="debug"
-                additivity="false">
-            <AppenderRef ref="info" level="debug"/>
-        </Logger>
         <Root level="info" includeLocation="true">
             <AppenderRef ref="info"/>
             <AppenderRef ref="error"/>
